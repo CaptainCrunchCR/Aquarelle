@@ -1,0 +1,15 @@
+.expense {
+  padding: 1rem;
+}
+
+.expense-item {
+  padding: 0.5rem !important;
+}
+
+.expense-register-button {
+  margin: 0.5rem !important;
+}
+
+#expense-persist-form-control {
+  margin: 0;
+}
