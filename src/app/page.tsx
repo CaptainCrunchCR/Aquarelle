@@ -1,10 +1,15 @@
-import Image from "next/image";
-import NavigationBar from "./navigation-bar";
+import ExpenseForm from "@/components/forms/ExpenseForm/ExpenseForm";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 
 export default function Home() {
   return (
     <>
-      <h1>Home Page</h1>
+      <Container maxWidth="xl">
+        <Paper elevation={2}>
+          <ExpenseForm />
+        </Paper>
+      </Container>      
     </>
   );
 }
