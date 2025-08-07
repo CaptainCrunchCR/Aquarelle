@@ -1,24 +1,52 @@
 "use client";
-import "./ExpenseForm.css";
+import styles from "./ExpenseForm.module.css";
 
 import ExpenseFormState from "@/interfaces/expense-form-state.interface";
-import {
-  ExpenseFormAction,
-  ExpenseForm as ExpenseFormType,
-} from "@/types/expense-form.types";
+import ExpenseFormProps from "@/interfaces/expense-form-props.interface";
+import { ExpenseFormAction, Expense } from "@/types/expense.types";
 import ExpenseFormSchema from "@/schemas/expense-form.schema";
-import React, { useReducer } from "react";
+
+import React, { FC, useReducer, useEffect } from "react";
 import * as zod from "zod";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Paper from "@mui/material/Paper";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 
 import toast from "react-hot-toast";
 
-const ExpenseForm = () => {
+const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
+  const { addNewExpense } = expenseHook;
+  const classNames = `${className}`;
+  const [, setIsClient] = React.useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+
+    // Only access localStorage after client-side hydration
+    const persistFormData = localStorage.getItem("persistFormData");
+    let isPersistent = true; // default value
+
+    if (persistFormData === null) {
+      localStorage.setItem("persistFormData", JSON.stringify(true));
+    } else {
+      isPersistent = JSON.parse(persistFormData);
+    }
+
+    dispatch({ type: "setPersistFormData", payload: isPersistent });
+
+    toast.success(
+      `${isPersistent ? "Persist Form Data: ON" : "Persist Form Data: OFF"}`,
+      {
+        position: "bottom-left",
+        duration: 5000,
+      }
+    );
+  }, []);
+
   const expenseReducer = (
     state: ExpenseFormState,
     action: ExpenseFormAction
@@ -42,6 +70,7 @@ const ExpenseForm = () => {
           isAmountError: false,
           descriptionHelperText: "",
           amountHelperText: "",
+          persistFormData: state.persistFormData,
         };
       case "clearErrors":
         return {
@@ -86,6 +115,8 @@ const ExpenseForm = () => {
     description: "",
     isDescriptionError: false,
     isAmountError: false,
+    descriptionHelperText: "",
+    amountHelperText: "",
     persistFormData: true,
   });
 
@@ -147,9 +178,12 @@ const ExpenseForm = () => {
       handleFormValidation();
       const expenses = JSON.parse(
         localStorage.getItem("expenses") ?? "[]"
-      ) as Array<ExpenseFormType>;
+      ) as Array<Expense>;
       if (expenses.length === 0) {
-        addNewExpenseToLocalStorage();
+        addNewExpense({
+          description: state.description,
+          amount: state.amount,
+        } as Expense);
       } else {
         const currentStateStored = expenses.find(
           (e) =>
@@ -165,7 +199,10 @@ const ExpenseForm = () => {
           );
           return;
         }
-        addNewExpenseToLocalStorage();
+        addNewExpense({
+          description: state.description,
+          amount: state.amount,
+        } as Expense);
       }
 
       toast.success(`🎉 ${state.description} added!`, {
@@ -180,6 +217,7 @@ const ExpenseForm = () => {
   };
 
   const handleTogglePersistFormData = () => {
+    if (typeof window === "undefined") return true;
     const toggle = !state.persistFormData;
     dispatch({ type: "setPersistFormData", payload: toggle });
 
@@ -191,85 +229,75 @@ const ExpenseForm = () => {
       localStorage.setItem("persistFormData", JSON.stringify(toggle));
     }
 
-    toast.success(`🔔 Persist Form Data now is ${toggle ? "ON" : "OFF"}`, {
+    toast.success(`🔔 Persist Form Data is now ${toggle ? "ON" : "OFF"}`, {
       position: "bottom-left",
       duration: 5000,
     });
   };
 
-  const addNewExpenseToLocalStorage = () => {
-    const expenses = JSON.parse(
-      localStorage.getItem("expenses") ?? "[]"
-    ) as Array<ExpenseFormType>;
-    const newExpense: ExpenseFormType = {
-      description: state.description,
-      amount: state.amount,
-    };
-    expenses.push(newExpense);
-    localStorage.removeItem("expenses");
-    localStorage.setItem("expenses", JSON.stringify(expenses));
-    console.info("Registered to local storage...");
-  };
   return (
-    <Box className="expense">
-      <FormControlLabel
-        className="expense-item"
-        id="expense-persist-form-control"
-        control={
-          <Switch
-            defaultChecked
-            size="medium"
-            value={state.persistFormData}
-            color="secondary"
-            onChange={handleTogglePersistFormData}
+    <Box className={classNames}>
+      <Paper elevation={0} variant="outlined">
+        <Box className={styles.expense}>
+          <FormControlLabel
+            className="expense-item"
+            id="expense-persist-form-control"
+            control={
+              <Switch
+                checked={!!state.persistFormData}
+                size="medium"
+                color="secondary"
+                onChange={handleTogglePersistFormData}
+              />
+            }
+            label="Persits Form Data"
           />
-        }
-        label="Persits Form Data"
-      />
-      <TextField
-        name="description"
-        type="text"
-        placeholder="Description"
-        className="expense-item"
-        fullWidth
-        onChange={(e) =>
-          dispatch({ type: "setDescription", payload: e.target.value })
-        }
-        error={state.isDescriptionError}
-        value={state.description}
-        helperText={state.isDescriptionError && state.descriptionHelperText}
-      />
-      <TextField
-        name="amount"
-        type="text"
-        placeholder="Amount"
-        className="expense-item"
-        fullWidth
-        onChange={(e) =>
-          dispatch({ type: "setAmount", payload: e.target.value })
-        }
-        error={state.isAmountError}
-        value={state.amount}
-        helperText={state.isAmountError && state.amountHelperText}
-      />
-      <Button
-        type="submit"
-        color="success"
-        variant="contained"
-        className="expense-register-button"
-        onClick={handleFormSubmit}
-      >
-        Register Expense
-      </Button>
-      <Button
-        type="reset"
-        color="warning"
-        variant="contained"
-        className="expense-reset-button"
-        onClick={() => dispatch({ type: "reset" })}
-      >
-        Reset
-      </Button>
+          <TextField
+            name="description"
+            type="text"
+            placeholder="Description"
+            className={styles["expense-item"]}
+            fullWidth
+            onChange={(e) =>
+              dispatch({ type: "setDescription", payload: e.target.value })
+            }
+            error={state.isDescriptionError}
+            value={state.description}
+            helperText={state.isDescriptionError && state.descriptionHelperText}
+          />
+          <TextField
+            name="amount"
+            type="text"
+            placeholder="Amount"
+            className={styles["expense-item"]}
+            fullWidth
+            onChange={(e) =>
+              dispatch({ type: "setAmount", payload: e.target.value })
+            }
+            error={state.isAmountError}
+            value={state.amount}
+            helperText={state.isAmountError && state.amountHelperText}
+          />
+          <Button
+            type="submit"
+            color="success"
+            variant="contained"
+            className={styles["expense-register-button"]}
+            onClick={handleFormSubmit}
+          >
+            Register Expense
+          </Button>
+          <Button
+            type="reset"
+            color="warning"
+            variant="contained"
+            className="expense-reset-button"
+            onClick={() => dispatch({ type: "reset" })}
+          >
+            Reset
+          </Button>
+        </Box>
+      </Paper>
     </Box>
   );
 };

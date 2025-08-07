@@ -9,9 +9,9 @@ type ExpenseFormAction =
   | { type: "clearErrors" }
   | { type: "reset" };
 
-type ExpenseForm = {
+type Expense = {
   description: string;
   amount: string;
 };
 
-export type { ExpenseFormAction, ExpenseForm };
+export type { ExpenseFormAction, Expense };
