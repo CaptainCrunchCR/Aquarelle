@@ -237,7 +237,7 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
 
   return (
     <Box className={classNames}>
-      <Paper elevation={0} variant="outlined">
+      <Paper elevation={2} variant="elevation">
         <Box className={styles.expense}>
           <FormControlLabel
             className="expense-item"
