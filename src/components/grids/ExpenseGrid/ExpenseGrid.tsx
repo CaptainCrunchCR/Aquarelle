@@ -25,7 +25,8 @@ const ExpenseGrid: React.FC<ExpenseGridProps> = ({
       field: "amount",
       resizable: false,
       autoHeight: true,
-      valueFormatter: (params) => formatToCurrency(params.value),
+      valueFormatter: (params) =>
+        formatToCurrency(params.value as string | number),
     },
     {
       flex: 1,
