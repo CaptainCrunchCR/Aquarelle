@@ -1,4 +1,4 @@
-type ExpenseFormAction =
+type TransactionFormAction =
   | { type: "setAmount"; payload: string }
   | { type: "setDescription"; payload: string }
   | { type: "setIsDescriptionError"; payload: boolean }
@@ -9,9 +9,9 @@ type ExpenseFormAction =
   | { type: "clearErrors" }
   | { type: "reset" };
 
-type Expense = {
+type Transaction = {
   description: string;
   amount: string;
 };
 
-export type { ExpenseFormAction, Expense };
+export type { TransactionFormAction, Transaction };

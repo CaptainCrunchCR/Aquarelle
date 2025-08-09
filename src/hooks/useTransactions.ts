@@ -1,9 +1,9 @@
 "use client";
-import { Expense } from "@/types/expense.types";
+import { Transaction } from "@/types/transaction.types";
 import { useState, useEffect } from "react";
 
-const useExpenses = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+const useTransactions = () => {
+  const [expenses, setExpenses] = useState<Transaction[]>([]);
 
   /**
    * Get expenses from local storage or create a new empty object instead.
@@ -11,11 +11,11 @@ const useExpenses = () => {
   useEffect(() => {
     const stored = JSON.parse(
       localStorage.getItem("expenses") ?? "[]"
-    ) as Expense[];
+    ) as Transaction[];
     setExpenses(stored.length > 0 ? stored : []);
   }, []);
 
-  const addNewExpense = (newExpense: Expense) => {
+  const addNewExpense = (newExpense: Transaction) => {
     /**
      * Register expense to hook expense state, allowing to be shared with multiple components.
      */
@@ -27,7 +27,7 @@ const useExpenses = () => {
      */
     const expenses = JSON.parse(
       localStorage.getItem("expenses") ?? "[]"
-    ) as Array<Expense>;
+    ) as Array<Transaction>;
     expenses.push(newExpense);
     localStorage.removeItem("expenses");
     localStorage.setItem("expenses", JSON.stringify(expenses));
@@ -40,4 +40,4 @@ const useExpenses = () => {
   };
 };
 
-export default useExpenses;
+export default useTransactions;

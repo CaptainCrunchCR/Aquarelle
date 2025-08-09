@@ -1,10 +1,10 @@
 "use client";
-import styles from "./ExpenseForm.module.css";
+import styles from "./TransactionForm.module.css";
 
-import ExpenseFormState from "@/interfaces/expense-form-state.interface";
-import ExpenseFormProps from "@/interfaces/expense-form-props.interface";
-import { ExpenseFormAction, Expense } from "@/types/expense.types";
-import ExpenseFormSchema from "@/schemas/expense-form.schema";
+import TransactionFormState from "@/interfaces/transaction-form-state.interface";
+import TransactionFormProps from "@/interfaces/transaction-form-props.interface";
+import { TransactionFormAction, Transaction } from "@/types/transaction.types";
+import TransactionFormSchema from "@/schemas/transaction-form.schema";
 
 import React, { FC, useReducer, useEffect } from "react";
 import * as zod from "zod";
@@ -18,8 +18,11 @@ import TextField from "@mui/material/TextField";
 
 import toast from "react-hot-toast";
 
-const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
-  const { addNewExpense } = expenseHook;
+const TransactionForm: FC<TransactionFormProps> = ({
+  className,
+  transactionHook,
+}) => {
+  const { addNewExpense } = transactionHook;
   const classNames = `${className}`;
   const [, setIsClient] = React.useState(false);
 
@@ -48,9 +51,9 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
   }, []);
 
   const expenseReducer = (
-    state: ExpenseFormState,
-    action: ExpenseFormAction
-  ): ExpenseFormState => {
+    state: TransactionFormState,
+    action: TransactionFormAction
+  ): TransactionFormState => {
     switch (action.type) {
       case "setDescription":
         return {
@@ -122,7 +125,7 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
 
   const handleFormValidation = () => {
     try {
-      ExpenseFormSchema.parse(state);
+      TransactionFormSchema.parse(state);
       dispatch({ type: "clearErrors" });
     } catch (error) {
       if (error instanceof zod.ZodError) {
@@ -178,12 +181,12 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
       handleFormValidation();
       const expenses = JSON.parse(
         localStorage.getItem("expenses") ?? "[]"
-      ) as Array<Expense>;
+      ) as Array<Transaction>;
       if (expenses.length === 0) {
         addNewExpense({
           description: state.description,
           amount: state.amount,
-        } as Expense);
+        } as Transaction);
       } else {
         const currentStateStored = expenses.find(
           (e) =>
@@ -202,7 +205,7 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
         addNewExpense({
           description: state.description,
           amount: state.amount,
-        } as Expense);
+        } as Transaction);
       }
 
       toast.success(`🎉 ${state.description} added!`, {
@@ -302,4 +305,4 @@ const ExpenseForm: FC<ExpenseFormProps> = ({ className, expenseHook }) => {
   );
 };
 
-export default ExpenseForm;
+export default TransactionForm;

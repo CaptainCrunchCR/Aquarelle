@@ -2,13 +2,13 @@
 import {
   calculateExpensesTotalAmount,
   parseFromStringCollectionToBig,
-} from "@/services/expenseService";
+} from "@/services/calculationService";
 import styles from "./page.module.css";
 
 import DisplayBlock from "@/components/DisplayBlock/DisplayBlock";
-import ExpenseForm from "@/components/forms/ExpenseForm/ExpenseForm";
-import ExpenseGrid from "@/components/grids/ExpenseGrid/ExpenseGrid";
-import useExpenses from "@/hooks/useExpenses";
+import TransactionForm from "@/components/forms/TransactionForm/TransactionForm";
+import TransactionGrid from "@/components/grids/TransactionGrid/TransactionGrid";
+import useTransactions from "@/hooks/useTransactions";
 
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
@@ -18,18 +18,20 @@ import { useEffect, useState } from "react";
 import { formatToCurrency } from "@/services/formattingService";
 
 export default function Home() {
-  const expenseHook = useExpenses();
+  const transactionHook = useTransactions();
   const [grandTotal, setGrandTotal] = useState<string>();
 
   useEffect(() => {
-    const expenses = [...expenseHook.expenses].map((expense) => expense.amount);
+    const expenses = [...transactionHook.expenses].map(
+      (expense) => expense.amount
+    );
     const parsedExpenses = parseFromStringCollectionToBig(expenses);
     /**
      * Calculate everything in a grand total
      */
     const total = calculateExpensesTotalAmount(parsedExpenses).toString();
     setGrandTotal(() => formatToCurrency(total));
-  }, [expenseHook.expenses]);
+  }, [transactionHook.expenses]);
 
   return (
     <>
@@ -47,9 +49,9 @@ export default function Home() {
           }}
         >
           <Box flexGrow="1">
-            <ExpenseForm
+            <TransactionForm
               className={styles["expense-container-item"]}
-              expenseHook={expenseHook}
+              transactionHook={transactionHook}
             />
           </Box>
           <Box>
@@ -60,9 +62,9 @@ export default function Home() {
             />
           </Box>
         </Box>
-        <ExpenseGrid
+        <TransactionGrid
           className={styles["expense-container-item"]}
-          expenseHook={expenseHook}
+          transactionHook={transactionHook}
         />
         <Toaster />
       </Container>

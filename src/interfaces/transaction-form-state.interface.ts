@@ -1,4 +1,4 @@
-interface ExpenseFormState {
+interface TransactionFormState {
   description: string;
   amount: string;
   isDescriptionError: boolean;
@@ -8,4 +8,4 @@ interface ExpenseFormState {
   persistFormData?: boolean;
 }
 
-export default ExpenseFormState;
+export default TransactionFormState;
