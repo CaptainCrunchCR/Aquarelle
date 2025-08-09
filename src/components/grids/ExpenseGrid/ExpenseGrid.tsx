@@ -9,6 +9,7 @@ import Box from "@mui/material/Box";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ModuleRegistry, ColDef } from "ag-grid-community";
 import themeQuartzCustom from "@/theme-aggrid";
+import { formatToCurrency } from "@/services/formattingService";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const ExpenseGrid: React.FC<ExpenseGridProps> = ({
@@ -24,6 +25,8 @@ const ExpenseGrid: React.FC<ExpenseGridProps> = ({
       field: "amount",
       resizable: false,
       autoHeight: true,
+      valueFormatter: (params) =>
+        formatToCurrency(params.value as string | number),
     },
     {
       flex: 1,
