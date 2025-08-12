@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Expenses",
+    "route": "/expenses",
+    "icon": "point-of-sale-rounded-icon",
+    "position": 1
+  },
+  {
+    "name": "Incomes",
+    "route": "/incomes",
+    "icon": "request-quote-rounded-icon",
+    "position": 2
+  }
+]
