@@ -1,10 +1,12 @@
+"use client";
 import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { Roboto, Poppins } from "next/font/google";
 import { CssBaseline } from "@mui/material";
-import { ThemeProvider } from "@mui/material/styles";
+import NavigationBar from "../components/navigation/NavigationBar";
+import { Roboto, Poppins } from "next/font/google";
 import theme from "../theme";
-import NavigationBar from "../components/NavigationBar";
+import { ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -32,6 +34,7 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <NavigationBar />
+            <Toolbar />
             {children}
           </ThemeProvider>
         </AppRouterCacheProvider>

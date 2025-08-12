@@ -1,8 +1,8 @@
 "use client";
-import styles from "./ExpenseGrid.module.css";
+import styles from "./TransactionGrid.module.css";
 import React, { useState, useEffect } from "react";
-import { Expense } from "@/types/expense.types";
-import ExpenseGridProps from "@/interfaces/expense-grid-props.interface";
+import { Transaction } from "@/types/transaction.types";
+import TransactionGridProps from "@/interfaces/transaction-grid-props.interface";
 
 import Box from "@mui/material/Box";
 
@@ -12,14 +12,15 @@ import themeQuartzCustom from "@/theme-aggrid";
 import { formatToCurrency } from "@/services/formattingService";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const ExpenseGrid: React.FC<ExpenseGridProps> = ({
+const TransactionGrid: React.FC<TransactionGridProps> = ({
   className,
-  expenseHook,
+  transactionHook,
+  transactionType,
 }) => {
-  const classNames = `${styles["expense-grid"]} ${className}`;
-  const { expenses } = expenseHook;
-  const [rowData, setRowData] = useState<Expense[]>([]);
-  const [colDefs] = useState<ColDef<Expense, unknown>[]>([
+  const classNames = `${styles["transaction-grid"]} ${className}`;
+  const { transactions } = transactionHook;
+  const [rowData, setRowData] = useState<Transaction[]>([]);
+  const [colDefs] = useState<ColDef<Transaction, unknown>[]>([
     {
       flex: 1,
       field: "amount",
@@ -38,9 +39,13 @@ const ExpenseGrid: React.FC<ExpenseGridProps> = ({
 
   useEffect(() => {
     setRowData(() => {
-      return [...expenses];
+      return [
+        ...transactions.filter(
+          (transaction) => transaction.type === transactionType
+        ),
+      ];
     });
-  }, [expenses]);
+  }, [transactions, transactionType]);
 
   return (
     <Box className={classNames}>
@@ -53,4 +58,4 @@ const ExpenseGrid: React.FC<ExpenseGridProps> = ({
   );
 };
 
-export default ExpenseGrid;
+export default TransactionGrid;

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:no-cache": "npm cache clean --force && npm run build",
     "start": "next start",
     "lint": "next lint"
   },

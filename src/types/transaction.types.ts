@@ -1,4 +1,4 @@
-type ExpenseFormAction =
+type TransactionFormAction =
   | { type: "setAmount"; payload: string }
   | { type: "setDescription"; payload: string }
   | { type: "setIsDescriptionError"; payload: boolean }
@@ -9,9 +9,19 @@ type ExpenseFormAction =
   | { type: "clearErrors" }
   | { type: "reset" };
 
-type Expense = {
+type TransactionType = "income" | "expense";
+
+const TRANSACTION_TYPES = {
+  INCOME: "income" as const,
+  EXPENSE: "expense" as const,
+} as const;
+
+type Transaction = {
   description: string;
   amount: string;
+  type: TransactionType;
 };
 
-export type { ExpenseFormAction, Expense };
+export type { Transaction, TransactionFormAction, TransactionType };
+
+export { TRANSACTION_TYPES };
