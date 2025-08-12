@@ -15,9 +15,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const TransactionGrid: React.FC<TransactionGridProps> = ({
   className,
   transactionHook,
+  transactionType,
 }) => {
-  const classNames = `${styles["expense-grid"]} ${className}`;
-  const { expenses } = transactionHook;
+  const classNames = `${styles["transaction-grid"]} ${className}`;
+  const { transactions } = transactionHook;
   const [rowData, setRowData] = useState<Transaction[]>([]);
   const [colDefs] = useState<ColDef<Transaction, unknown>[]>([
     {
@@ -38,9 +39,13 @@ const TransactionGrid: React.FC<TransactionGridProps> = ({
 
   useEffect(() => {
     setRowData(() => {
-      return [...expenses];
+      return [
+        ...transactions.filter(
+          (transaction) => transaction.type === transactionType
+        ),
+      ];
     });
-  }, [expenses]);
+  }, [transactions, transactionType]);
 
   return (
     <Box className={classNames}>

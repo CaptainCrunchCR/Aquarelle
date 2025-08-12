@@ -21,8 +21,9 @@ import toast from "react-hot-toast";
 const TransactionForm: FC<TransactionFormProps> = ({
   className,
   transactionHook,
+  transactionType,
 }) => {
-  const { addNewExpense } = transactionHook;
+  const { addNewTransaction } = transactionHook;
   const classNames = `${className}`;
   const [, setIsClient] = React.useState(false);
 
@@ -50,7 +51,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
     );
   }, []);
 
-  const expenseReducer = (
+  const transactionReducer = (
     state: TransactionFormState,
     action: TransactionFormAction
   ): TransactionFormState => {
@@ -113,7 +114,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
     }
   };
 
-  const [state, dispatch] = useReducer(expenseReducer, {
+  const [state, dispatch] = useReducer(transactionReducer, {
     amount: "",
     description: "",
     isDescriptionError: false,
@@ -179,22 +180,25 @@ const TransactionForm: FC<TransactionFormProps> = ({
   const handleFormSubmit = () => {
     try {
       handleFormValidation();
-      const expenses = JSON.parse(
-        localStorage.getItem("expenses") ?? "[]"
+      const transactions = JSON.parse(
+        localStorage.getItem("transactions") ?? "[]"
       ) as Array<Transaction>;
-      if (expenses.length === 0) {
-        addNewExpense({
+      if (transactions.length === 0) {
+        addNewTransaction({
           description: state.description,
           amount: state.amount,
+          type: transactionType,
         } as Transaction);
       } else {
-        const currentStateStored = expenses.find(
+        const currentStateStored = transactions.find(
           (e) =>
-            e.amount === state.amount && e.description === state.description
+            e.amount === state.amount &&
+            e.description === state.description &&
+            e.type === e.type
         );
         if (currentStateStored) {
           toast.error(
-            `🙅‍♂️ ${state.description} was already added to your expenses!`,
+            `🙅‍♂️ ${state.description} was already added to your ${transactionType}s!`,
             {
               position: "bottom-left",
               duration: 5000,
@@ -202,16 +206,20 @@ const TransactionForm: FC<TransactionFormProps> = ({
           );
           return;
         }
-        addNewExpense({
+        addNewTransaction({
           description: state.description,
           amount: state.amount,
+          type: transactionType,
         } as Transaction);
       }
 
-      toast.success(`🎉 ${state.description} added!`, {
-        position: "bottom-left",
-        duration: 5000,
-      });
+      toast.success(
+        `🎉 ${state.description} added to your ${transactionType}s!`,
+        {
+          position: "bottom-left",
+          duration: 5000,
+        }
+      );
 
       if (!state.persistFormData) dispatch({ type: "reset" });
     } catch {
@@ -241,10 +249,10 @@ const TransactionForm: FC<TransactionFormProps> = ({
   return (
     <Box className={classNames}>
       <Paper elevation={2} variant="elevation">
-        <Box className={styles.expense}>
+        <Box className={styles.transaction}>
           <FormControlLabel
-            className="expense-item"
-            id="expense-persist-form-control"
+            className="transaction-item"
+            id="transaction-persist-form-control"
             control={
               <Switch
                 checked={!!state.persistFormData}
@@ -259,7 +267,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
             name="description"
             type="text"
             placeholder="Description"
-            className={styles["expense-item"]}
+            className={styles["transaction-item"]}
             fullWidth
             onChange={(e) =>
               dispatch({ type: "setDescription", payload: e.target.value })
@@ -272,7 +280,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
             name="amount"
             type="text"
             placeholder="Amount"
-            className={styles["expense-item"]}
+            className={styles["transaction-item"]}
             fullWidth
             onChange={(e) =>
               dispatch({ type: "setAmount", payload: e.target.value })
@@ -285,16 +293,16 @@ const TransactionForm: FC<TransactionFormProps> = ({
             type="submit"
             color="success"
             variant="contained"
-            className={styles["expense-register-button"]}
+            className={styles["transaction-register-button"]}
             onClick={handleFormSubmit}
           >
-            Register Expense
+            Register {transactionType.toString().toUpperCase()}
           </Button>
           <Button
             type="reset"
             color="warning"
             variant="contained"
-            className="expense-reset-button"
+            className="transaction-reset-button"
             onClick={() => dispatch({ type: "reset" })}
           >
             Reset

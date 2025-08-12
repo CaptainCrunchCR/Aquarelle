@@ -3,40 +3,40 @@ import { Transaction } from "@/types/transaction.types";
 import { useState, useEffect } from "react";
 
 const useTransactions = () => {
-  const [expenses, setExpenses] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   /**
-   * Get expenses from local storage or create a new empty object instead.
+   * Get transactions from local storage or create a new empty object instead.
    */
   useEffect(() => {
     const stored = JSON.parse(
-      localStorage.getItem("expenses") ?? "[]"
+      localStorage.getItem("transactions") ?? "[]"
     ) as Transaction[];
-    setExpenses(stored.length > 0 ? stored : []);
+    setTransactions(stored.length > 0 ? stored : []);
   }, []);
 
-  const addNewExpense = (newExpense: Transaction) => {
+  const addNewTransaction = (newExpense: Transaction) => {
     /**
-     * Register expense to hook expense state, allowing to be shared with multiple components.
+     * Register transaction to hook transaction state, allowing to be shared with multiple components.
      */
-    setExpenses((prevState) => {
+    setTransactions((prevState) => {
       return [...prevState, newExpense];
     });
     /**
      * Register expense to localStorage
      */
-    const expenses = JSON.parse(
-      localStorage.getItem("expenses") ?? "[]"
+    const transactions = JSON.parse(
+      localStorage.getItem("transactions") ?? "[]"
     ) as Array<Transaction>;
-    expenses.push(newExpense);
-    localStorage.removeItem("expenses");
-    localStorage.setItem("expenses", JSON.stringify(expenses));
+    transactions.push(newExpense);
+    localStorage.removeItem("transactions");
+    localStorage.setItem("transactions", JSON.stringify(transactions));
     console.info("Registered to local storage...");
   };
 
   return {
-    addNewExpense,
-    expenses,
+    addNewTransaction,
+    transactions,
   };
 };
 
