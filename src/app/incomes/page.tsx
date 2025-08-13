@@ -3,7 +3,6 @@ import {
   calculateTotalAmount,
   parseFromStringCollectionToBig,
 } from "@/services/calculationService";
-import styles from "./page.module.css";
 
 import DisplayBlock from "@/components/DisplayBlock/DisplayBlock";
 import TransactionForm from "@/components/forms/TransactionForm/TransactionForm";
@@ -51,21 +50,15 @@ export default function Incomes() {
         >
           <Box flexGrow="1">
             <TransactionForm
-              className={styles["transaction-container-item"]}
               transactionHook={transactionHook}
               transactionType={TRANSACTION_TYPES.INCOME}
             />
           </Box>
           <Box>
-            <DisplayBlock
-              title="Incomes Grand Total"
-              className={styles["transaction-container-item"]}
-              description={grandTotal}
-            />
+            <DisplayBlock title="Total Incomes" description={grandTotal} />
           </Box>
         </Box>
         <TransactionGrid
-          className={styles["transaction-container-item"]}
           transactionHook={transactionHook}
           transactionType={TRANSACTION_TYPES.INCOME}
         />

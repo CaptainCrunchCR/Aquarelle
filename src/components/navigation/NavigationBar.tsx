@@ -22,7 +22,6 @@ export default function NavigationBar() {
     display: "flex",
     alignItems: "center",
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: "flex-end",
   }));
@@ -71,7 +70,7 @@ export default function NavigationBar() {
       </AppBar>
       <Drawer open={open} variant="temporary" onClose={() => setIsOpen(false)}>
         <DrawerHeader>
-          <IconButton color="warning" onClick={() => setIsOpen(!open)}>
+          <IconButton color="tertiary" onClick={() => setIsOpen(!open)}>
             <ChevronLeftRounded />
           </IconButton>
         </DrawerHeader>

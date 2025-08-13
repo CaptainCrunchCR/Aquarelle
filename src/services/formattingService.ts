@@ -4,10 +4,19 @@ const formatToCurrency = (currencyNumber: string | number) => {
       ? parseFloat(currencyNumber)
       : currencyNumber;
 
-  return new Intl.NumberFormat("es-CR", {
+  let formattedValue = new Intl.NumberFormat("es-CR", {
     style: "currency",
     currency: "CRC",
+    currencyDisplay: "code",
+    useGrouping: "always",
   }).format(numericValue);
+
+  // Replace spaces with commas (thousands) and commas with periods (decimals) in one go
+  formattedValue = formattedValue
+    .replace(/(\d)\s(\d)/g, "$1,$2")
+    .replace(/,(\d{2})$/, ".$1");
+
+  return formattedValue;
 };
 
 export { formatToCurrency };

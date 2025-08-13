@@ -1,9 +1,8 @@
 "use client";
-import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { CssBaseline } from "@mui/material";
 import NavigationBar from "../components/navigation/NavigationBar";
-import { Roboto, Poppins } from "next/font/google";
+import { Roboto, Open_Sans, JetBrains_Mono } from "next/font/google";
 import theme from "../theme";
 import { ThemeProvider } from "@mui/material/styles";
 import Toolbar from "@mui/material/Toolbar";
@@ -15,11 +14,18 @@ const roboto = Roboto({
   variable: "--font-roboto",
 });
 
-const poppins = Poppins({
-  weight: ["300", "400", "500", "700"],
+const openSans = Open_Sans({
+  weight: ["300", "400", "500", "600", "700", "800"],
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-poppins",
+  variable: "--font-open-sans",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
 });
 
 export default function RootLayout({
@@ -28,7 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${roboto.variable} ${poppins.variable}`}>
+    <html
+      lang="en"
+      className={`${roboto.variable} ${openSans.variable} ${jetbrainsMono.variable}`}
+    >
       <body>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>

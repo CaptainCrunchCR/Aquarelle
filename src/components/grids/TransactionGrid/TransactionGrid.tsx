@@ -1,5 +1,4 @@
 "use client";
-import styles from "./TransactionGrid.module.css";
 import React, { useState, useEffect } from "react";
 import { Transaction } from "@/types/transaction.types";
 import TransactionGridProps from "@/interfaces/transaction-grid-props.interface";
@@ -13,11 +12,9 @@ import { formatToCurrency } from "@/services/formattingService";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const TransactionGrid: React.FC<TransactionGridProps> = ({
-  className,
   transactionHook,
   transactionType,
 }) => {
-  const classNames = `${styles["transaction-grid"]} ${className}`;
   const { transactions } = transactionHook;
   const [rowData, setRowData] = useState<Transaction[]>([]);
   const [colDefs] = useState<ColDef<Transaction, unknown>[]>([
@@ -48,7 +45,12 @@ const TransactionGrid: React.FC<TransactionGridProps> = ({
   }, [transactions, transactionType]);
 
   return (
-    <Box className={classNames}>
+    <Box
+      sx={{
+        width: "100%",
+        height: "50vh",
+      }}
+    >
       <AgGridReact
         rowData={rowData}
         columnDefs={colDefs}
