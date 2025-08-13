@@ -1,63 +1,80 @@
 "use client";
-import DisplayBlockProps from "@/interfaces/display-block-props.interface";
-
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import DisplayBlockProps from "@/interfaces/display-block-props.interface";
+import DonutSmallRoundedIcon from "@mui/icons-material/DonutSmallRounded";
+import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
-const DisplayBlock: React.FC<DisplayBlockProps> = ({
-  title,
-  description,
-  className,
-}) => {
-  const classNames = `${className}`;
+const DisplayBlock: React.FC<DisplayBlockProps> = ({ title, description }) => {
   return (
-    <>
-      <Card
-        elevation={5}
-        variant="elevation"
-        className={classNames}
+    <Card
+      variant="elevation"
+      elevation={3}
+      sx={{
+        minHeight: "50px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "1rem",
+        borderRadius: "25px",
+      }}
+    >
+      <CardContent
         sx={{
-          width: "fit-content",
-          height: 150,
-          backgroundColor: "secondary.main",
-          position: "relative",
-          overflow: "visible",
-          "& .MuiCardContent-root": {
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-          },
-          "& .MuiTypography-root:nth-child(1)": {
-            color: "secondary.contrastText",
-          },
-          "& .MuiTypography-root:nth-child(2)": {
-            color: "secondary.contrastText",
-            opacity: 0.8,
-          },
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
         }}
       >
-        <CardContent sx={{ height: "100%" }}>
-          <Typography
-            variant="h4"
-            component="div"
-            sx={{ fontFamily: "var(--font-poppins)" }}
-            fontWeight={"bolder"}
-          >
-            {title}
-          </Typography>
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{ fontFamily: "var(--font-poppins)" }}
-            fontWeight={"bolder"}
-          >
-            {description}
-          </Typography>
-        </CardContent>
-      </Card>
-    </>
+        <Paper
+          variant="elevation"
+          elevation={3}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minWidth: 60,
+            minHeight: 60,
+            borderRadius: "100%",
+            backgroundColor: "secondary.50",
+          }}
+        >
+          <DonutSmallRoundedIcon
+            fontSize="large"
+            sx={{ color: "secondary.main" }}
+          />
+        </Paper>
+        <Typography
+          variant="h5"
+          component="div"
+          fontWeight="300"
+          color="textPrimary"
+        >
+          {title}
+        </Typography>
+        <Chip
+          label={
+            <Typography
+              variant="body1"
+              component="div"
+              fontWeight="400"
+              fontFamily="var(--font-jetbrains-mono)"
+              sx={{ color: "secondary.900" }}
+            >
+              {description}
+            </Typography>
+          }
+          variant="outlined"
+          sx={{
+            color: "secondary.dark",
+            backgroundColor: "secondary.50",
+          }}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

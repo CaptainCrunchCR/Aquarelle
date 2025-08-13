@@ -1,5 +1,4 @@
 "use client";
-import styles from "./TransactionForm.module.css";
 
 import TransactionFormState from "@/interfaces/transaction-form-state.interface";
 import TransactionFormProps from "@/interfaces/transaction-form-props.interface";
@@ -19,12 +18,10 @@ import TextField from "@mui/material/TextField";
 import toast from "react-hot-toast";
 
 const TransactionForm: FC<TransactionFormProps> = ({
-  className,
   transactionHook,
   transactionType,
 }) => {
   const { addNewTransaction } = transactionHook;
-  const classNames = `${className}`;
   const [, setIsClient] = React.useState(false);
 
   useEffect(() => {
@@ -247,17 +244,26 @@ const TransactionForm: FC<TransactionFormProps> = ({
   };
 
   return (
-    <Box className={classNames}>
+    <Box
+      sx={{
+        marginBottom: "1rem",
+      }}
+    >
       <Paper elevation={2} variant="elevation">
-        <Box className={styles.transaction}>
+        <Box
+          sx={{
+            padding: "1rem",
+          }}
+        >
           <FormControlLabel
-            className="transaction-item"
-            id="transaction-persist-form-control"
+            sx={{
+              margin: "0",
+            }}
             control={
               <Switch
                 checked={!!state.persistFormData}
                 size="medium"
-                color="secondary"
+                color={"secondary"}
                 onChange={handleTogglePersistFormData}
               />
             }
@@ -267,7 +273,6 @@ const TransactionForm: FC<TransactionFormProps> = ({
             name="description"
             type="text"
             placeholder="Description"
-            className={styles["transaction-item"]}
             fullWidth
             onChange={(e) =>
               dispatch({ type: "setDescription", payload: e.target.value })
@@ -275,12 +280,14 @@ const TransactionForm: FC<TransactionFormProps> = ({
             error={state.isDescriptionError}
             value={state.description}
             helperText={state.isDescriptionError && state.descriptionHelperText}
+            sx={{
+              padding: "0.5rem",
+            }}
           />
           <TextField
             name="amount"
             type="text"
             placeholder="Amount"
-            className={styles["transaction-item"]}
             fullWidth
             onChange={(e) =>
               dispatch({ type: "setAmount", payload: e.target.value })
@@ -288,20 +295,25 @@ const TransactionForm: FC<TransactionFormProps> = ({
             error={state.isAmountError}
             value={state.amount}
             helperText={state.isAmountError && state.amountHelperText}
+            sx={{
+              padding: "0.5rem",
+            }}
           />
           <Button
             type="submit"
-            color="success"
+            color="secondary"
             variant="contained"
-            className={styles["transaction-register-button"]}
             onClick={handleFormSubmit}
+            sx={{
+              margin: "0.5rem",
+            }}
           >
             Register {transactionType.toString().toUpperCase()}
           </Button>
           <Button
             type="reset"
-            color="warning"
-            variant="contained"
+            color="secondary"
+            variant="outlined"
             className="transaction-reset-button"
             onClick={() => dispatch({ type: "reset" })}
           >
