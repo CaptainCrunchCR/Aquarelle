@@ -5,11 +5,12 @@ import TransactionFormProps from "@/interfaces/transaction-form-props.interface"
 import { TransactionFormAction, Transaction } from "@/types/transaction.types";
 import TransactionFormSchema from "@/schemas/transaction-form.schema";
 
-import React, { FC, useReducer, useEffect } from "react";
+import React, { FC, useReducer, useEffect, useState, useCallback } from "react";
 import * as zod from "zod";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import { capitalizeString } from "@/services/formattingService";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Paper from "@mui/material/Paper";
 import Switch from "@mui/material/Switch";
@@ -21,32 +22,23 @@ const TransactionForm: FC<TransactionFormProps> = ({
   transactionHook,
   transactionType,
 }) => {
+  const [isClient, setIsClient] = useState<boolean>(false); //This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
+
   const { addNewTransaction } = transactionHook;
-  const [, setIsClient] = React.useState(false);
+  const persistFormOptionName =
+    "persist" + capitalizeString(transactionType) + "FormData";
 
-  useEffect(() => {
-    setIsClient(true);
-
-    // Only access localStorage after client-side hydration
-    const persistFormData = localStorage.getItem("persistFormData");
-    let isPersistent = true; // default value
-
-    if (persistFormData === null) {
-      localStorage.setItem("persistFormData", JSON.stringify(true));
-    } else {
-      isPersistent = JSON.parse(persistFormData);
+  const getPersistFormOptionFromLocalStorage = useCallback(() => {
+    let persistFormOption;
+    try {
+      persistFormOption = JSON.parse(
+        localStorage.getItem(persistFormOptionName) ?? ""
+      );
+    } catch {
+      persistFormOption = null;
     }
-
-    dispatch({ type: "setPersistFormData", payload: isPersistent });
-
-    toast.success(
-      `${isPersistent ? "Persist Form Data: ON" : "Persist Form Data: OFF"}`,
-      {
-        position: "bottom-left",
-        duration: 5000,
-      }
-    );
-  }, []);
+    return persistFormOption;
+  }, [persistFormOptionName]);
 
   const transactionReducer = (
     state: TransactionFormState,
@@ -118,8 +110,49 @@ const TransactionForm: FC<TransactionFormProps> = ({
     isAmountError: false,
     descriptionHelperText: "",
     amountHelperText: "",
-    persistFormData: true,
+    persistFormData: false,
   });
+
+  /**
+   * Syncs default state with local storage object in the first render.
+   */
+  useEffect(() => {
+    setIsClient(true);
+
+    const persistFormOption = getPersistFormOptionFromLocalStorage();
+
+    if (persistFormOption !== null)
+      dispatch({ type: "setPersistFormData", payload: persistFormOption });
+  }, [getPersistFormOptionFromLocalStorage]);
+
+  /**
+   * Syncs local storage object with the state when state.persistFormData is changed or in the first render.
+   */
+  useEffect(() => {
+    if (!isClient) return;
+
+    const persistFormOption = getPersistFormOptionFromLocalStorage();
+    /**
+     * The local storage doesn't have a stored value
+     */
+    if (persistFormOption === null) {
+      localStorage.setItem(persistFormOptionName, JSON.stringify(false));
+    } else if (persistFormOption !== state.persistFormData) {
+      /**
+       * Only happens when the reducer was dispatched, so localStorage needs to be synced
+       */
+      localStorage.removeItem(persistFormOptionName);
+      localStorage.setItem(
+        persistFormOptionName,
+        JSON.stringify(state.persistFormData)
+      );
+    } else return;
+  }, [
+    isClient,
+    state.persistFormData,
+    getPersistFormOptionFromLocalStorage,
+    persistFormOptionName,
+  ]);
 
   const handleFormValidation = () => {
     try {
@@ -225,22 +258,15 @@ const TransactionForm: FC<TransactionFormProps> = ({
   };
 
   const handleTogglePersistFormData = () => {
-    if (typeof window === "undefined") return true;
-    const toggle = !state.persistFormData;
-    dispatch({ type: "setPersistFormData", payload: toggle });
-
-    const persistFormData = localStorage.getItem("persistFormData");
-    if (persistFormData === null)
-      localStorage.setItem("persistFormData", JSON.stringify(toggle));
-    else {
-      localStorage.removeItem("persistFormData");
-      localStorage.setItem("persistFormData", JSON.stringify(toggle));
+    const persistFormOption = getPersistFormOptionFromLocalStorage();
+    if (persistFormOption === null) {
+      dispatch({ type: "setPersistFormData", payload: false });
+    } else {
+      dispatch({
+        type: "setPersistFormData",
+        payload: !persistFormOption as boolean,
+      });
     }
-
-    toast.success(`🔔 Persist Form Data is now ${toggle ? "ON" : "OFF"}`, {
-      position: "bottom-left",
-      duration: 5000,
-    });
   };
 
   return (
