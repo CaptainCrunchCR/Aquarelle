@@ -236,11 +236,6 @@ const TransactionForm: FC<TransactionFormProps> = ({
       localStorage.removeItem("persistFormData");
       localStorage.setItem("persistFormData", JSON.stringify(toggle));
     }
-
-    toast.success(`🔔 Persist Form Data is now ${toggle ? "ON" : "OFF"}`, {
-      position: "bottom-left",
-      duration: 5000,
-    });
   };
 
   return (
