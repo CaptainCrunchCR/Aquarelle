@@ -19,4 +19,15 @@ const formatToCurrency = (currencyNumber: string | number) => {
   return formattedValue;
 };
 
-export { formatToCurrency };
+/**
+ * Converts the first alphabetic character in a string to uppercase.
+ * @param str String to be formatted
+ * @returns A new string modified; original string reminds unchanged.
+ */
+const capitalizeString = (str: string): string => {
+  if (str.length === 0) return "";
+
+  return "" + str[0].toUpperCase() + str.slice(1);
+};
+
+export { formatToCurrency, capitalizeString };
