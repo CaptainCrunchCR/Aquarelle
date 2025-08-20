@@ -289,7 +289,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
               <Switch
                 checked={!!state.persistFormData}
                 size="medium"
-                color={"secondary"}
+                color="primary"
                 onChange={handleTogglePersistFormData}
               />
             }
@@ -327,7 +327,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
           />
           <Button
             type="submit"
-            color="secondary"
+            color="primary"
             variant="contained"
             onClick={handleFormSubmit}
             sx={{
@@ -338,7 +338,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
           </Button>
           <Button
             type="reset"
-            color="secondary"
+            color="primary"
             variant="outlined"
             className="transaction-reset-button"
             onClick={() => dispatch({ type: "reset" })}

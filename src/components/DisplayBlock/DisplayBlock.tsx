@@ -39,13 +39,10 @@ const DisplayBlock: React.FC<DisplayBlockProps> = ({ title, description }) => {
             minWidth: 60,
             minHeight: 60,
             borderRadius: "100%",
-            backgroundColor: "secondary.50",
+            backgroundColor: "primary.50",
           }}
         >
-          <DonutSmallRoundedIcon
-            fontSize="large"
-            sx={{ color: "secondary.main" }}
-          />
+          <DonutSmallRoundedIcon fontSize="large" color="primary" />
         </Paper>
         <Typography
           variant="h5"
@@ -62,15 +59,15 @@ const DisplayBlock: React.FC<DisplayBlockProps> = ({ title, description }) => {
               component="div"
               fontWeight="400"
               fontFamily="var(--font-jetbrains-mono)"
-              sx={{ color: "secondary.900" }}
+              color="primary.dark"
             >
               {description}
             </Typography>
           }
           variant="outlined"
           sx={{
-            color: "secondary.dark",
-            backgroundColor: "secondary.50",
+            color: "primary.dark",
+            backgroundColor: "primary.50",
           }}
         />
       </CardContent>
