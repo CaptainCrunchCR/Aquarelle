@@ -70,7 +70,7 @@ export default function NavigationBar() {
       </AppBar>
       <Drawer open={open} variant="temporary" onClose={() => setIsOpen(false)}>
         <DrawerHeader>
-          <IconButton color="tertiary" onClick={() => setIsOpen(!open)}>
+          <IconButton color="secondary" onClick={() => setIsOpen(!open)}>
             <ChevronLeftRounded />
           </IconButton>
         </DrawerHeader>
