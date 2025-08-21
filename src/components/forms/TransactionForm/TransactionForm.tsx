@@ -23,15 +23,11 @@ import { TransactionType, TRANSACTION_TYPES } from "@/types/transaction.types";
 
 import toast from "react-hot-toast";
 
-const TransactionForm: FC<TransactionFormProps> = ({
-  transactionHook,
-  transactionType,
-}) => {
+const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
   const [isClient, setIsClient] = useState<boolean>(false); //This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
 
   const { addNewTransaction } = transactionHook;
-  const persistFormOptionName =
-    "persist" + capitalizeString(transactionType) + "FormData";
+  const persistFormOptionName = "persistFormData";
 
   const getPersistFormOptionFromLocalStorage = useCallback(() => {
     let persistFormOption;
@@ -229,7 +225,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
         addNewTransaction({
           description: state.description,
           amount: state.amount,
-          type: transactionType,
+          type: state.transactionType,
         } as Transaction);
       } else {
         const currentStateStored = transactions.find(
@@ -240,7 +236,11 @@ const TransactionForm: FC<TransactionFormProps> = ({
         );
         if (currentStateStored) {
           toast.error(
-            `🙅‍♂️ ${state.description} was already added to your ${transactionType}s!`,
+            `🙅‍♂️ ${
+              state.description
+            } was already added to your ${capitalizeString(
+              state.transactionType
+            )}s!`,
             {
               position: "bottom-left",
               duration: 5000,
@@ -251,12 +251,12 @@ const TransactionForm: FC<TransactionFormProps> = ({
         addNewTransaction({
           description: state.description,
           amount: state.amount,
-          type: transactionType,
+          type: state.transactionType,
         } as Transaction);
       }
 
       toast.success(
-        `🎉 ${state.description} added to your ${transactionType}s!`,
+        `🎉 ${state.description} added to your ${state.transactionType}s!`,
         {
           position: "bottom-left",
           duration: 5000,
@@ -367,7 +367,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
               margin: "0.5rem",
             }}
           >
-            Register {transactionType.toString().toUpperCase()}
+            Register {state.transactionType}
           </Button>
           <Button
             type="reset"
