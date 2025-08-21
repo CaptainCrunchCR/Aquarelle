@@ -1,3 +1,5 @@
+import { TransactionType } from "@/types/transaction.types";
+
 interface TransactionFormState {
   description: string;
   amount: string;
@@ -6,6 +8,7 @@ interface TransactionFormState {
   descriptionHelperText?: string;
   amountHelperText?: string;
   persistFormData?: boolean;
+  transactionType: TransactionType;
 }
 
 export default TransactionFormState;

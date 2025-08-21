@@ -11,10 +11,15 @@ import * as zod from "zod";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { capitalizeString } from "@/services/formattingService";
+import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
+import { TransactionType, TRANSACTION_TYPES } from "@/types/transaction.types";
 
 import toast from "react-hot-toast";
 
@@ -64,6 +69,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
           descriptionHelperText: "",
           amountHelperText: "",
           persistFormData: state.persistFormData,
+          transactionType: TRANSACTION_TYPES.EXPENSE,
         };
       case "clearErrors":
         return {
@@ -98,6 +104,11 @@ const TransactionForm: FC<TransactionFormProps> = ({
           ...state,
           persistFormData: action.payload,
         };
+      case "setTransactionType":
+        return {
+          ...state,
+          transactionType: action.payload,
+        };
       default:
         return state;
     }
@@ -111,6 +122,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
     descriptionHelperText: "",
     amountHelperText: "",
     persistFormData: false,
+    transactionType: TRANSACTION_TYPES.EXPENSE,
   });
 
   /**
@@ -295,6 +307,27 @@ const TransactionForm: FC<TransactionFormProps> = ({
             }
             label="Persits Form Data"
           />
+          <Box>
+            <FormControl sx={{ width: 120, m: "0.5rem" }} size="small">
+              <InputLabel id="transaction-type">Type</InputLabel>
+              <Select
+                labelId="transaction-type"
+                label="Type"
+                value={state.transactionType}
+                onChange={(e) =>
+                  dispatch({
+                    type: "setTransactionType",
+                    payload: e.target.value as TransactionType,
+                  })
+                }
+              >
+                <MenuItem value="income" selected>
+                  Income
+                </MenuItem>
+                <MenuItem value="expense">Expense</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             name="description"
             type="text"

@@ -7,7 +7,8 @@ type TransactionFormAction =
   | { type: "setAmountHelperText"; payload: string }
   | { type: "setPersistFormData"; payload: boolean }
   | { type: "clearErrors" }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "setTransactionType"; payload: TransactionType };
 
 type TransactionType = "income" | "expense";
 
