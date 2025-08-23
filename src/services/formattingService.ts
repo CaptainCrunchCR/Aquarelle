@@ -1,28 +1,29 @@
-const formatToCurrency = (currencyNumber: string | number) => {
+import Big from "big.js";
+
+/**
+ * Formats a number or string as CRC currency string using accounting style.
+ * @param currencyNumber - number or string number representation
+ * @returns number formatted as CRC currency string
+ */
+const formatToCRCCurrency = (currencyNumber: string | number) => {
   const numericValue =
     typeof currencyNumber === "string"
       ? parseFloat(currencyNumber)
       : currencyNumber;
 
-  let formattedValue = new Intl.NumberFormat("es-CR", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "CRC",
     currencyDisplay: "code",
     useGrouping: "always",
+    currencySign: "accounting",
   }).format(numericValue);
-
-  // Replace spaces with commas (thousands) and commas with periods (decimals) in one go
-  formattedValue = formattedValue
-    .replace(/(\d)\s(\d)/g, "$1,$2")
-    .replace(/,(\d{2})$/, ".$1");
-
-  return formattedValue;
 };
 
 /**
  * Converts the first alphabetic character in a string to uppercase.
  * @param str String to be formatted
- * @returns A new string modified; original string reminds unchanged.
+ * @returns new string modified; original string reminds unchanged.
  */
 const capitalizeString = (str: string): string => {
   if (str.length === 0) return "";
@@ -30,4 +31,16 @@ const capitalizeString = (str: string): string => {
   return "" + str[0].toUpperCase() + str.slice(1);
 };
 
-export { formatToCurrency, capitalizeString };
+/**
+ * Creates a new array of type Big
+ * @param values - collection of numbers in a string representation
+ * @returns new array parsed
+ */
+const parseFromStringCollectionToBig = (values: Array<string>): Big[] =>
+  values.map((value) => Big(value));
+
+export {
+  formatToCRCCurrency,
+  capitalizeString,
+  parseFromStringCollectionToBig,
+};
