@@ -6,7 +6,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PointOfSaleRoundedIcon from "@mui/icons-material/PointOfSaleRounded";
-import RequestQuoteRoundedIcon from "@mui/icons-material/RequestQuoteRounded";
+import Link from "next/link";
 
 import React, { FC } from "react";
 
@@ -15,7 +15,6 @@ const NavigationItem: FC<NavigationItemProps> = ({
 }) => {
   const iconMapper = {
     "point-of-sale-rounded-icon": PointOfSaleRoundedIcon,
-    "request-quote-rounded-icon": RequestQuoteRoundedIcon,
   };
 
   const IconComponent =
@@ -23,7 +22,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
 
   return (
     <ListItem disablePadding>
-      <ListItemButton href={route}>
+      <ListItemButton component={Link} href={route}>
         <ListItemIcon>{IconComponent && <IconComponent />}</ListItemIcon>
         <ListItemText primary={name} />
       </ListItemButton>
