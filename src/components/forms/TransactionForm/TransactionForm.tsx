@@ -24,7 +24,10 @@ import { TransactionType, TRANSACTION_TYPES } from "@/types/transaction.types";
 import toast from "react-hot-toast";
 
 const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
-  const [isClient, setIsClient] = useState<boolean>(false); //This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
+  /**
+   * This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
+   */
+  const [isClient, setIsClient] = useState<boolean>(false);
 
   const { addNewTransaction } = transactionHook;
   const persistFormOptionName = "persistFormData";
@@ -221,13 +224,8 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
       const transactions = JSON.parse(
         localStorage.getItem("transactions") ?? "[]"
       ) as Array<Transaction>;
-      if (transactions.length === 0) {
-        addNewTransaction({
-          description: state.description,
-          amount: state.amount,
-          type: state.transactionType,
-        } as Transaction);
-      } else {
+
+      if (transactions.length > 0) {
         const currentStateStored = transactions.find(
           (e) =>
             e.amount === state.amount &&
@@ -248,12 +246,13 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
           );
           return;
         }
-        addNewTransaction({
-          description: state.description,
-          amount: state.amount,
-          type: state.transactionType,
-        } as Transaction);
       }
+
+      addNewTransaction({
+        description: state.description,
+        amount: state.amount,
+        type: state.transactionType,
+      } as Transaction);
 
       toast.success(
         `🎉 ${state.description} added to your ${state.transactionType}s!`,
@@ -282,11 +281,7 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
   };
 
   return (
-    <Box
-      sx={{
-        marginBottom: "1rem",
-      }}
-    >
+    <Box>
       <Paper elevation={2} variant="elevation">
         <Box
           sx={{
