@@ -11,22 +11,26 @@ import * as zod from "zod";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { capitalizeString } from "@/services/formattingService";
+import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
+import { TransactionType, TRANSACTION_TYPES } from "@/types/transaction.types";
 
 import toast from "react-hot-toast";
 
-const TransactionForm: FC<TransactionFormProps> = ({
-  transactionHook,
-  transactionType,
-}) => {
-  const [isClient, setIsClient] = useState<boolean>(false); //This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
+const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
+  /**
+   * This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
+   */
+  const [isClient, setIsClient] = useState<boolean>(false);
 
   const { addNewTransaction } = transactionHook;
-  const persistFormOptionName =
-    "persist" + capitalizeString(transactionType) + "FormData";
+  const persistFormOptionName = "persistFormData";
 
   const getPersistFormOptionFromLocalStorage = useCallback(() => {
     let persistFormOption;
@@ -64,6 +68,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
           descriptionHelperText: "",
           amountHelperText: "",
           persistFormData: state.persistFormData,
+          transactionType: TRANSACTION_TYPES.EXPENSE,
         };
       case "clearErrors":
         return {
@@ -98,6 +103,11 @@ const TransactionForm: FC<TransactionFormProps> = ({
           ...state,
           persistFormData: action.payload,
         };
+      case "setTransactionType":
+        return {
+          ...state,
+          transactionType: action.payload,
+        };
       default:
         return state;
     }
@@ -111,6 +121,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
     descriptionHelperText: "",
     amountHelperText: "",
     persistFormData: false,
+    transactionType: TRANSACTION_TYPES.EXPENSE,
   });
 
   /**
@@ -213,13 +224,8 @@ const TransactionForm: FC<TransactionFormProps> = ({
       const transactions = JSON.parse(
         localStorage.getItem("transactions") ?? "[]"
       ) as Array<Transaction>;
-      if (transactions.length === 0) {
-        addNewTransaction({
-          description: state.description,
-          amount: state.amount,
-          type: transactionType,
-        } as Transaction);
-      } else {
+
+      if (transactions.length > 0) {
         const currentStateStored = transactions.find(
           (e) =>
             e.amount === state.amount &&
@@ -228,7 +234,11 @@ const TransactionForm: FC<TransactionFormProps> = ({
         );
         if (currentStateStored) {
           toast.error(
-            `🙅‍♂️ ${state.description} was already added to your ${transactionType}s!`,
+            `🙅‍♂️ ${
+              state.description
+            } was already added to your ${capitalizeString(
+              state.transactionType
+            )}s!`,
             {
               position: "bottom-left",
               duration: 5000,
@@ -236,15 +246,16 @@ const TransactionForm: FC<TransactionFormProps> = ({
           );
           return;
         }
-        addNewTransaction({
-          description: state.description,
-          amount: state.amount,
-          type: transactionType,
-        } as Transaction);
       }
 
+      addNewTransaction({
+        description: state.description,
+        amount: state.amount,
+        type: state.transactionType,
+      } as Transaction);
+
       toast.success(
-        `🎉 ${state.description} added to your ${transactionType}s!`,
+        `🎉 ${state.description} added to your ${state.transactionType}s!`,
         {
           position: "bottom-left",
           duration: 5000,
@@ -270,11 +281,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
   };
 
   return (
-    <Box
-      sx={{
-        marginBottom: "1rem",
-      }}
-    >
+    <Box>
       <Paper elevation={2} variant="elevation">
         <Box
           sx={{
@@ -295,6 +302,27 @@ const TransactionForm: FC<TransactionFormProps> = ({
             }
             label="Persits Form Data"
           />
+          <Box>
+            <FormControl sx={{ width: 120, m: "0.5rem" }} size="small">
+              <InputLabel id="transaction-type">Type</InputLabel>
+              <Select
+                labelId="transaction-type"
+                label="Type"
+                value={state.transactionType}
+                onChange={(e) =>
+                  dispatch({
+                    type: "setTransactionType",
+                    payload: e.target.value as TransactionType,
+                  })
+                }
+              >
+                <MenuItem value="income" selected>
+                  Income
+                </MenuItem>
+                <MenuItem value="expense">Expense</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TextField
             name="description"
             type="text"
@@ -334,7 +362,7 @@ const TransactionForm: FC<TransactionFormProps> = ({
               margin: "0.5rem",
             }}
           >
-            Register {transactionType.toString().toUpperCase()}
+            Register {state.transactionType}
           </Button>
           <Button
             type="reset"

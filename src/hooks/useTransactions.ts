@@ -12,7 +12,9 @@ const useTransactions = () => {
     const stored = JSON.parse(
       localStorage.getItem("transactions") ?? "[]"
     ) as Transaction[];
-    setTransactions(stored.length > 0 ? stored : []);
+    if (stored.length > 0) {
+      setTransactions(stored);
+    }
   }, []);
 
   const addNewTransaction = (newExpense: Transaction) => {
@@ -31,7 +33,6 @@ const useTransactions = () => {
     transactions.push(newExpense);
     localStorage.removeItem("transactions");
     localStorage.setItem("transactions", JSON.stringify(transactions));
-    console.info("Registered to local storage...");
   };
 
   return {
