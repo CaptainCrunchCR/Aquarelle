@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Transaction, TRANSACTION_TYPES } from "@/types/transaction.types";
-import TransactionGridProps from "@/interfaces/transaction-grid-props.interface";
+import TransactionGridProps from "@/interfaces/properties/transaction-grid-props.interface";
 
 import Box from "@mui/material/Box";
 

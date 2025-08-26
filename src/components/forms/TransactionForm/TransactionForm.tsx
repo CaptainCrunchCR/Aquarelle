@@ -1,7 +1,7 @@
 "use client";
 
-import TransactionFormState from "@/interfaces/transaction-form-state.interface";
-import TransactionFormProps from "@/interfaces/transaction-form-props.interface";
+import TransactionFormState from "@/interfaces/states/transaction-form-state.interface";
+import TransactionFormProps from "@/interfaces/properties/transaction-form-props.interface";
 import { TransactionFormAction, Transaction } from "@/types/transaction.types";
 import TransactionFormSchema from "@/schemas/transaction-form.schema";
 
