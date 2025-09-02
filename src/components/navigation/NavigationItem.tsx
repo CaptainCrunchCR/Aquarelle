@@ -1,6 +1,6 @@
 "use client";
 
-import NavigationItemProps from "@/interfaces/navigation-item-props.interface";
+import NavigationItemProps from "@/interfaces/properties/navigation-item-props.interface";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";

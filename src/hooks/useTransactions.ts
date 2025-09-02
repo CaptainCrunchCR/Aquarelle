@@ -1,43 +1,81 @@
 "use client";
-import { Transaction } from "@/types/transaction.types";
-import { useState, useEffect } from "react";
+import TransactionsState from "@/interfaces/states/transaction-state.interface";
+import { Category } from "@/types/category.types";
+import { Transaction, TransactionsAction } from "@/types/transaction.types";
+import { useReducer } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const useTransactions = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  /**
-   * Get transactions from local storage or create a new empty object instead.
-   */
-  useEffect(() => {
-    const stored = JSON.parse(
-      localStorage.getItem("transactions") ?? "[]"
-    ) as Transaction[];
-    if (stored.length > 0) {
-      setTransactions(stored);
+  const transactionsReducer = (
+    state: TransactionsState,
+    action: TransactionsAction
+  ): TransactionsState => {
+    switch (action.type) {
+      case "setVersion": {
+        return {
+          ...state,
+          version: action.payload,
+        };
+      }
+      case "addSingleCategory": {
+        return {
+          ...state,
+          categories: [...state.categories, action.payload],
+        };
+      }
+      case "initializeCategories": {
+        return {
+          ...state,
+          categories: [...state.categories, ...action.payload],
+        };
+      }
+      case "initializeTransactions": {
+        return {
+          ...state,
+          transactions: [...action.payload],
+        };
+      }
+      case "addSingleTransaction": {
+        return {
+          ...state,
+          transactions: [...state.transactions, action.payload],
+        };
+      }
+      case "reset": {
+        return {
+          version: 1,
+          transactions: [],
+          categories: [],
+        };
+      }
+      default:
+        return state;
     }
-  }, []);
+  };
+
+  const [state, dispatch] = useReducer(transactionsReducer, {
+    version: 1,
+    transactions: [],
+    categories: [
+      {
+        id: uuidv4(),
+        name: "Uncategorized",
+      },
+    ],
+  });
 
   const addNewTransaction = (newExpense: Transaction) => {
-    /**
-     * Register transaction to hook transaction state, allowing to be shared with multiple components.
-     */
-    setTransactions((prevState) => {
-      return [...prevState, newExpense];
-    });
-    /**
-     * Register expense to localStorage
-     */
-    const transactions = JSON.parse(
-      localStorage.getItem("transactions") ?? "[]"
-    ) as Array<Transaction>;
-    transactions.push(newExpense);
-    localStorage.removeItem("transactions");
-    localStorage.setItem("transactions", JSON.stringify(transactions));
+    dispatch({ type: "addSingleTransaction", payload: newExpense });
+  };
+
+  const addNewCategory = (newCategory: Category) => {
+    dispatch({ type: "addSingleCategory", payload: newCategory });
   };
 
   return {
+    addNewCategory,
     addNewTransaction,
-    transactions,
+    state,
   };
 };
 
