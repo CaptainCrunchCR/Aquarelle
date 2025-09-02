@@ -2,12 +2,13 @@
 
 import TransactionFormState from "@/interfaces/states/transaction-form-state.interface";
 import TransactionFormProps from "@/interfaces/properties/transaction-form-props.interface";
-import { TransactionFormAction, Transaction } from "@/types/transaction.types";
+import { TransactionFormAction } from "@/types/transaction.types";
 import TransactionFormSchema from "@/schemas/transaction-form.schema";
 
 import React, { FC, useReducer, useEffect, useState, useCallback } from "react";
 import * as zod from "zod";
 
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { capitalizeString } from "@/services/formattingService";
@@ -19,17 +20,30 @@ import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
-import { TransactionType, TRANSACTION_TYPES } from "@/types/transaction.types";
+import {
+  Transaction,
+  TransactionType,
+  TRANSACTION_TYPES,
+} from "@/types/transaction.types";
+import { v4 as uuidv4 } from "uuid";
 
 import toast from "react-hot-toast";
+import { Category, CategoryOptionType } from "@/types/category.types";
 
+const filter = createFilterOptions<CategoryOptionType>();
 const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
+  const formCategoryOptions: CategoryOptionType[] =
+    transactionHook.state.categories.map((cat) => ({ name: cat.name }));
   /**
    * This state prevents hydration errors, is only used as a security method to prevent NextJS issues.
    */
   const [isClient, setIsClient] = useState<boolean>(false);
 
-  const { addNewTransaction } = transactionHook;
+  const {
+    addNewTransaction,
+    addNewCategory,
+    state: { transactions, categories },
+  } = transactionHook;
   const persistFormOptionName = "persistFormData";
 
   const getPersistFormOptionFromLocalStorage = useCallback(() => {
@@ -67,8 +81,9 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
           isAmountError: false,
           descriptionHelperText: "",
           amountHelperText: "",
-          persistFormData: state.persistFormData,
+          persistFormData: !!state.persistFormData,
           transactionType: TRANSACTION_TYPES.EXPENSE,
+          transactionCategory: { name: categories[0].name },
         };
       case "clearErrors":
         return {
@@ -108,6 +123,11 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
           ...state,
           transactionType: action.payload,
         };
+      case "setTransactionCategory":
+        return {
+          ...state,
+          transactionCategory: action.payload,
+        };
       default:
         return state;
     }
@@ -122,6 +142,7 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
     amountHelperText: "",
     persistFormData: false,
     transactionType: TRANSACTION_TYPES.EXPENSE,
+    transactionCategory: { name: categories[0].name },
   });
 
   /**
@@ -192,6 +213,7 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
         const amountError = normalizedErrors.find(
           (error) => error.path === "amount"
         );
+
         if (descriptionError) {
           dispatch({ type: "setIsDescriptionError", payload: true });
           dispatch({
@@ -221,10 +243,6 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
   const handleFormSubmit = () => {
     try {
       handleFormValidation();
-      const transactions = JSON.parse(
-        localStorage.getItem("transactions") ?? "[]"
-      ) as Array<Transaction>;
-
       if (transactions.length > 0) {
         const currentStateStored = transactions.find(
           (e) =>
@@ -244,16 +262,43 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
               duration: 5000,
             }
           );
+
           return;
         }
       }
 
-      addNewTransaction({
+      const { name, inputValue } = state.transactionCategory;
+      let assignedName = "";
+      if (name && (!inputValue || inputValue.length === 0)) {
+        assignedName = name;
+      } else {
+        if (inputValue) {
+          assignedName = inputValue;
+        }
+      }
+      const mappedCategory = {
+        name: assignedName,
+      } as Category;
+
+      const transaction = {
+        id: uuidv4(),
         description: state.description,
         amount: state.amount,
         type: state.transactionType,
-      } as Transaction);
+        created_at: new Date(),
+      } as Transaction;
 
+      const isExistent = categories.find((cat) => cat.name === assignedName);
+
+      if (isExistent) {
+        transaction.categoryId = isExistent.id;
+      } else {
+        mappedCategory.id = uuidv4();
+        transaction.categoryId = mappedCategory.id;
+        addNewCategory(mappedCategory);
+      }
+
+      addNewTransaction(transaction);
       toast.success(
         `🎉 ${state.description} added to your ${state.transactionType}s!`,
         {
@@ -263,7 +308,15 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
       );
 
       if (!state.persistFormData) dispatch({ type: "reset" });
-    } catch {
+    } catch (error) {
+      toast.error("An error occurred while trying to add the transaction.", {
+        position: "bottom-left",
+        duration: 5000,
+      });
+
+      console.error(
+        `An error occurred while trying to add the transaction: ${error}`
+      );
       return;
     }
   };
@@ -302,7 +355,7 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
             }
             label="Persits Form Data"
           />
-          <Box>
+          <Box sx={{ display: "flex" }}>
             <FormControl sx={{ width: 120, m: "0.5rem" }} size="small">
               <InputLabel id="transaction-type">Type</InputLabel>
               <Select
@@ -322,6 +375,79 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
                 <MenuItem value="expense">Expense</MenuItem>
               </Select>
             </FormControl>
+            {state.transactionType === TRANSACTION_TYPES.EXPENSE && (
+              <Autocomplete
+                sx={{ minWidth: 120, maxWidth: 200, m: "0.5rem", flexGrow: 1 }}
+                selectOnFocus
+                clearOnBlur
+                options={formCategoryOptions}
+                value={state.transactionCategory}
+                handleHomeEndKeys
+                freeSolo
+                size="small"
+                filterOptions={(options, params) => {
+                  const filtered = filter(options, params);
+                  const { inputValue } = params;
+                  const isExisting = options.some(
+                    (option) => inputValue === option.name
+                  );
+                  if (inputValue !== "" && !isExisting) {
+                    filtered.push({
+                      inputValue: inputValue,
+                      name: `Add ${inputValue}`,
+                    });
+                  }
+                  return filtered;
+                }}
+                onChange={(_, newValue) => {
+                  if (typeof newValue === "string") {
+                    dispatch({
+                      type: "setTransactionCategory",
+                      payload: { name: newValue },
+                    });
+                  } else if (newValue && newValue.inputValue) {
+                    dispatch({
+                      type: "setTransactionCategory",
+                      payload: { name: newValue.inputValue },
+                    });
+                  } else {
+                    dispatch({
+                      type: "setTransactionCategory",
+                      payload: newValue as Category,
+                    });
+                  }
+                }}
+                getOptionLabel={(option) => {
+                  if (typeof option === "string") {
+                    return option;
+                  }
+                  if (option.inputValue) {
+                    return option.inputValue;
+                  }
+                  return option.name;
+                }}
+                renderOption={(props, option) => {
+                  const { key, ...optionProps } = props;
+                  return (
+                    <li key={key} {...optionProps}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Category"
+                    size="small"
+                    sx={{
+                      ".MuiAutocomplete-endAdornment": {
+                        display: "none",
+                      },
+                    }}
+                  />
+                )}
+              />
+            )}
           </Box>
           <TextField
             name="description"
@@ -333,7 +459,9 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
             }
             error={state.isDescriptionError}
             value={state.description}
-            helperText={state.isDescriptionError && state.descriptionHelperText}
+            helperText={
+              state.isDescriptionError ? state.descriptionHelperText : null
+            }
             sx={{
               padding: "0.5rem",
             }}
@@ -348,7 +476,7 @@ const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {
             }
             error={state.isAmountError}
             value={state.amount}
-            helperText={state.isAmountError && state.amountHelperText}
+            helperText={state.isAmountError ? state.amountHelperText : null}
             sx={{
               padding: "0.5rem",
             }}

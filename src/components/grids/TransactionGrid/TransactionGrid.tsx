@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import Chip from "@mui/material/Chip";
+import React, { useState, useEffect, useMemo } from "react";
 import { Transaction, TRANSACTION_TYPES } from "@/types/transaction.types";
 import TransactionGridProps from "@/interfaces/properties/transaction-grid-props.interface";
 
@@ -11,10 +12,12 @@ import {
   ModuleRegistry,
   ColDef,
   ValueFormatterParams,
+  ICellRendererParams,
 } from "ag-grid-community";
 import themeQuartzCustom from "@/theme-aggrid";
 import {
   capitalizeString,
+  formatDate,
   formatToCRCCurrency,
 } from "@/services/formattingService";
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -23,35 +26,83 @@ const TransactionGrid: React.FC<TransactionGridProps> = ({
   transactionHook,
 }) => {
   const [rowData, setRowData] = useState<Transaction[]>([]);
-  const [colDefs] = useState<ColDef<Transaction, unknown>[]>([
-    {
-      flex: 1,
-      field: "amount",
-      resizable: false,
-      autoHeight: true,
-      valueFormatter: (params) => formatAmount(params),
-    },
-    {
-      flex: 1,
-      field: "description",
-      resizable: false,
-      autoHeight: true,
-      valueFormatter: (params) => capitalizeString(params.value as string),
-    },
-    {
-      flex: 1,
-      field: "type",
-      resizable: false,
-      autoHeight: true,
-      valueFormatter: (params) => capitalizeString(params.value as string),
-    },
-  ]);
+  const colDefs = useMemo<ColDef<Transaction, unknown>[]>(
+    () => [
+      {
+        flex: 1,
+        field: "amount",
+        resizable: false,
+        autoHeight: true,
+        valueFormatter: (params) => formatAmount(params),
+      },
+      {
+        flex: 1,
+        field: "description",
+        resizable: false,
+        autoHeight: true,
+        valueFormatter: (params) => capitalizeString(params.value as string),
+      },
+      {
+        flex: 1,
+        field: "type",
+        resizable: false,
+        autoHeight: true,
+        valueFormatter: (params) => capitalizeString(params.value as string),
+      },
+      {
+        flex: 1,
+        field: "categoryId",
+        headerName: "Category",
+        resizable: false,
+        autoHeight: true,
+        valueGetter: (params) => {
+          if (!params.data)
+            return transactionHook.state.categories[0]?.name ?? "";
+          const selectedCategory = transactionHook.state.categories.find(
+            (cat) => cat.id === params.data?.categoryId
+          );
+          return (
+            selectedCategory?.name ??
+            transactionHook.state.categories[0]?.name ??
+            ""
+          );
+        },
+        cellRenderer: (params: ICellRendererParams<Transaction>) => {
+          if (!params.data)
+            return transactionHook.state.categories[0]?.name ?? "";
+          const selectedCategory = transactionHook.state.categories.find(
+            (cat) => cat.id === params.data?.categoryId
+          );
+
+          return (
+            <Chip
+              label={
+                selectedCategory?.name ??
+                transactionHook.state.categories[0]?.name ??
+                ""
+              }
+              color="primary"
+            />
+          );
+        },
+      },
+      {
+        flex: 1,
+        field: "created_at",
+        headerName: "Created At",
+        resizable: false,
+        autoHeight: true,
+        valueFormatter: (params) => formatDate(params.value as Date),
+      },
+    ],
+    [transactionHook.state.categories]
+  );
 
   useEffect(() => {
     setRowData(() => {
-      return [...transactionHook.transactions];
+      return [...transactionHook.state.transactions];
     });
-  }, [transactionHook.transactions]);
+  }, [transactionHook.state.transactions]);
 
   const formatAmount = (params: ValueFormatterParams) => {
     const { amount, type } = params.data;

@@ -30,11 +30,11 @@ export default function Transactions() {
   });
 
   useEffect(() => {
-    if (transactionHook.transactions.length === 0) return;
-    const incomesData = transactionHook.transactions
+    if (transactionHook.state.transactions.length === 0) return;
+    const incomesData = transactionHook.state.transactions
       .filter((transaction) => transaction.type === TRANSACTION_TYPES.INCOME)
       .map((transaction) => transaction.amount);
-    const expensesData = transactionHook.transactions
+    const expensesData = transactionHook.state.transactions
       .filter((transaction) => transaction.type === TRANSACTION_TYPES.EXPENSE)
       .map((transaction) => transaction.amount);
 
@@ -52,7 +52,7 @@ export default function Transactions() {
         calculateTotalSubstractionInAmount(expenses).toString()
       ),
     }));
-  }, [transactionHook.transactions]);
+  }, [transactionHook.state.transactions]);
 
   return (
     <Container maxWidth="xl" sx={{ marginY: "2rem" }}>
@@ -68,7 +68,7 @@ export default function Transactions() {
         <Box flexGrow="1">
           <TransactionForm transactionHook={transactionHook} />
         </Box>
-        {transactionHook.transactions.length > 0 && (
+        {transactionHook.state.transactions.length > 0 && (
           <Box>
             <DisplayBlock
               title="Wallet"
@@ -78,7 +78,7 @@ export default function Transactions() {
           </Box>
         )}
       </Box>
-      {transactionHook.transactions.length > 0 && (
+      {transactionHook.state.transactions.length > 0 && (
         <Box
           sx={{
             display: "flex",

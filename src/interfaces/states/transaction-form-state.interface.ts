@@ -1,3 +1,4 @@
+import { CategoryOptionType } from "@/types/category.types";
 import { TransactionType } from "@/types/transaction.types";
 
 interface TransactionFormState {
@@ -9,6 +10,7 @@ interface TransactionFormState {
   amountHelperText?: string;
   persistFormData?: boolean;
   transactionType: TransactionType;
+  transactionCategory: CategoryOptionType;
 }
 
 export default TransactionFormState;
