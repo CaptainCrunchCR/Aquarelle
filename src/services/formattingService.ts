@@ -39,8 +39,31 @@ const capitalizeString = (str: string): string => {
 const parseFromStringCollectionToBig = (values: Array<string>): Big[] =>
   values.map((value) => Big(value));
 
+/**
+ * Returns a string representation of a Date in MM/DD/YYYY HH:MM:SS format.
+ * @param date - date value
+ * @returns new string representation of the formatted date.
+ */
+const formatDate = (date: Date): string => {
+  return (
+    "" +
+    date.getMonth().toString() +
+    "/" +
+    date.getDay().toString() +
+    "/" +
+    date.getFullYear().toString() +
+    " " +
+    date.getHours().toString() +
+    ":" +
+    date.getMinutes().toString() +
+    ":" +
+    date.getSeconds().toString()
+  );
+};
+
 export {
   formatToCRCCurrency,
   capitalizeString,
   parseFromStringCollectionToBig,
+  formatDate,
 };
