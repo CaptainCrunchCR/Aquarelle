@@ -20,6 +20,7 @@ type TransactionsAction =
   | { type: "addSingleTransaction"; payload: Transaction }
   | { type: "initializeCategories"; payload: Category[] }
   | { type: "initializeTransactions"; payload: Transaction[] }
+  | { type: "removeTransaction"; payload: string }
   | { type: "reset" };
 
 type TransactionType = "income" | "expense";

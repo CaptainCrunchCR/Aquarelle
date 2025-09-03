@@ -1,10 +1,12 @@
 "use client";
+import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import React, { useState, useEffect, useMemo } from "react";
+import DeleteIcon from "@mui/icons-material/DeleteRounded";
+import IconButton from "@mui/material/Button";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import toast from "react-hot-toast";
 import { Transaction, TRANSACTION_TYPES } from "@/types/transaction.types";
 import TransactionGridProps from "@/interfaces/properties/transaction-grid-props.interface";
-
-import Box from "@mui/material/Box";
 
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -25,7 +27,21 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const TransactionGrid: React.FC<TransactionGridProps> = ({
   transactionHook,
 }) => {
+  const { removeTransaction } = transactionHook;
   const [rowData, setRowData] = useState<Transaction[]>([]);
+
+  const handleRemoveTransaction = useCallback(
+    (transaction: Transaction | undefined) => {
+      if (transaction === undefined) return;
+      removeTransaction(transaction.id);
+      toast.error(transaction.description + " was deleted.", {
+        position: "bottom-left",
+        duration: 5000,
+      });
+    },
+    [removeTransaction]
+  );
+
   const colDefs = useMemo<ColDef<Transaction, unknown>[]>(
     () => [
       {
@@ -94,8 +110,26 @@ const TransactionGrid: React.FC<TransactionGridProps> = ({
         autoHeight: true,
         valueFormatter: (params) => formatDate(params.value as Date),
       },
+      {
+        flex: 1,
+        headerName: "Actions",
+        resizable: false,
+        autoHeight: true,
+        cellRenderer: (params: ICellRendererParams<Transaction>) => {
+          return (
+            <IconButton
+              sx={{ color: "error.dark" }}
+              aria-label="delete"
+              size="medium"
+              onClick={() => handleRemoveTransaction(params.data)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          );
+        },
+      },
     ],
-    [transactionHook.state.categories]
+    [transactionHook.state.categories, handleRemoveTransaction]
   );
 
   useEffect(() => {
@@ -125,6 +159,9 @@ const TransactionGrid: React.FC<TransactionGridProps> = ({
         rowData={rowData}
         columnDefs={colDefs}
         theme={themeQuartzCustom}
+        animateRows={true}
+        getRowId={(params) => params.data.id}
+        deltaSort={true}
       />
     </Box>
   );
