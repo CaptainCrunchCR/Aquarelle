@@ -1,7 +1,7 @@
 "use client";
-import TransactionsState from "@/interfaces/states/transaction-state.interface";
 import { Category } from "@/types/category.types";
 import { Transaction, TransactionsAction } from "@/types/transaction.types";
+import TransactionsState from "@/interfaces/states/transaction-state.interface";
 import { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -41,6 +41,14 @@ const useTransactions = () => {
           transactions: [...state.transactions, action.payload],
         };
       }
+      case "removeTransaction": {
+        return {
+          ...state,
+          transactions: state.transactions.filter(
+            (transaction) => transaction.id !== action.payload
+          ),
+        };
+      }
       case "reset": {
         return {
           version: 1,
@@ -68,6 +76,11 @@ const useTransactions = () => {
     dispatch({ type: "addSingleTransaction", payload: newExpense });
   };
 
+  const removeTransaction = (transactionId: string) => {
+    if (transactionId === "") return;
+    dispatch({ type: "removeTransaction", payload: transactionId });
+  };
+
   const addNewCategory = (newCategory: Category) => {
     dispatch({ type: "addSingleCategory", payload: newCategory });
   };
@@ -75,6 +88,7 @@ const useTransactions = () => {
   return {
     addNewCategory,
     addNewTransaction,
+    removeTransaction,
     state,
   };
 };
