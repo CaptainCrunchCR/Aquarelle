@@ -20,6 +20,17 @@ const eslintConfig = [
         "error",
         { skipBlankLines: false, ignoreComments: false },
       ],
+      "sort-imports": [
+        "error",
+        {
+          ignoreCase: false,
+          ignoreDeclarationSort: false,
+          ignoreMemberSort: false,
+          memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
+          allowSeparatedGroups: false,
+        },
+      ],
+
       "no-multiple-empty-lines": "error",
     },
   },
