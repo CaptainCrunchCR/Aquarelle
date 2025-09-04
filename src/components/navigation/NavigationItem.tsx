@@ -1,14 +1,12 @@
 "use client";
-
-import NavigationItemProps from "@/interfaces/properties/navigation-item-props.interface";
+import React, { FC } from "react";
+import Link from "next/link";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import NavigationItemProps from "@/interfaces/properties/navigation-item-props.interface";
 import PointOfSaleRoundedIcon from "@mui/icons-material/PointOfSaleRounded";
-import Link from "next/link";
-
-import React, { FC } from "react";
 
 const NavigationItem: FC<NavigationItemProps> = ({
   navigationItem: { name, route, icon },

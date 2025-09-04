@@ -1,8 +1,8 @@
-import type { SvgIconProps } from "@mui/material/SvgIcon";
 import {
   DisplayBlockColors,
   DisplayBlockVariant,
 } from "@/types/display-block.types";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 interface DisplayBlockProps {
   variant?: DisplayBlockVariant;
   className?: string;

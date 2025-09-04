@@ -1,17 +1,16 @@
 "use client";
 
-import TransactionFormState from "@/interfaces/states/transaction-form-state.interface";
-import TransactionFormProps from "@/interfaces/properties/transaction-form-props.interface";
-import { TransactionFormAction } from "@/types/transaction.types";
-import TransactionFormSchema from "@/schemas/transaction-form.schema";
-
-import React, { FC, useReducer, useEffect, useState, useCallback } from "react";
 import * as zod from "zod";
-
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import { Category, CategoryOptionType } from "@/types/category.types";
+import React, { FC, useCallback, useEffect, useReducer, useState } from "react";
+import {
+  TRANSACTION_TYPES,
+  Transaction,
+  TransactionType,
+} from "@/types/transaction.types";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { capitalizeString } from "@/services/formattingService";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import InputLabel from "@mui/material/InputLabel";
@@ -20,15 +19,13 @@ import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
-import {
-  Transaction,
-  TransactionType,
-  TRANSACTION_TYPES,
-} from "@/types/transaction.types";
-import { v4 as uuidv4 } from "uuid";
-
+import { TransactionFormAction } from "@/types/transaction.types";
+import TransactionFormProps from "@/interfaces/properties/transaction-form-props.interface";
+import TransactionFormSchema from "@/schemas/transaction-form.schema";
+import TransactionFormState from "@/interfaces/states/transaction-form-state.interface";
+import { capitalizeString } from "@/services/formattingService";
 import toast from "react-hot-toast";
-import { Category, CategoryOptionType } from "@/types/category.types";
+import { v4 as uuidv4 } from "uuid";
 
 const filter = createFilterOptions<CategoryOptionType>();
 const TransactionForm: FC<TransactionFormProps> = ({ transactionHook }) => {

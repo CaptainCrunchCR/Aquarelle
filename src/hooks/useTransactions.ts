@@ -1,6 +1,6 @@
 "use client";
-import { Category } from "@/types/category.types";
 import { Transaction, TransactionsAction } from "@/types/transaction.types";
+import { Category } from "@/types/category.types";
 import TransactionsState from "@/interfaces/states/transaction-state.interface";
 import { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";

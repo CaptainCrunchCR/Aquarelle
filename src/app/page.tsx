@@ -4,22 +4,20 @@ import {
   calculateTotalAdditionInAmount,
   calculateTotalSubstractionInAmount,
 } from "@/services/calculationService";
-import { parseFromStringCollectionToBig } from "@/services/formattingService";
+import { useEffect, useState } from "react";
 import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import DisplayBlock from "@/components/DisplayBlock/DisplayBlock";
+import { TRANSACTION_TYPES } from "@/types/transaction.types";
+import { Toaster } from "react-hot-toast";
 import TransactionForm from "@/components/forms/TransactionForm/TransactionForm";
 import TransactionGrid from "@/components/grids/TransactionGrid/TransactionGrid";
 import TrendingDownRoundedIcon from "@mui/icons-material/TrendingDownRounded";
 import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
-import useTransactions from "@/hooks/useTransactions";
-
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-
-import { Toaster } from "react-hot-toast";
-import { useEffect, useState } from "react";
 import { formatToCRCCurrency } from "@/services/formattingService";
-import { TRANSACTION_TYPES } from "@/types/transaction.types";
+import { parseFromStringCollectionToBig } from "@/services/formattingService";
+import useTransactions from "@/hooks/useTransactions";
 
 export default function Transactions() {
   const transactionHook = useTransactions();

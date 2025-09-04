@@ -1,4 +1,4 @@
-import { themeQuartz, iconSetMaterial } from "ag-grid-community";
+import { iconSetMaterial, themeQuartz } from "ag-grid-community";
 
 const themeQuartzCustom = themeQuartz.withPart(iconSetMaterial).withParams({
   browserColorScheme: "light",

@@ -1,10 +1,10 @@
 "use client";
+import { green, red } from "@mui/material/colors";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import DisplayBlockProps from "@/interfaces/properties/display-block-props.interface";
 import Paper from "@mui/material/Paper";
-import { red, green } from "@mui/material/colors";
 import Typography from "@mui/material/Typography";
 
 const DisplayBlock: React.FC<DisplayBlockProps> = ({
